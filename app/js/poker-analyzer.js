@@ -70,17 +70,22 @@ function estimateOuts(hand, board) {
     }
   }
 
-  // זוגות / שלישיות
-  const pairs = Object.values(rankCounts).filter(c => c === 2).length;
-  const trips = Object.values(rankCounts).filter(c => c === 3).length;
+  // זיהוי זוגות/סטים מתוקן
+  let pairRanks = [];
+  let tripsRanks = [];
 
-  if (trips >= 1) {
+  for (const [rank, count] of Object.entries(rankCounts)) {
+    if (count === 2) pairRanks.push(rank);
+    if (count === 3) tripsRanks.push(rank);
+  }
+
+  if (tripsRanks.length >= 1) {
     outs += 7;
     reasons.push("סט – אאוטים לפול האוס / קארה");
-  } else if (pairs >= 2) {
+  } else if (pairRanks.length >= 2) {
     outs += 4;
     reasons.push("שני זוגות – אאוטים לפול האוס");
-  } else if (pairs === 1) {
+  } else if (pairRanks.length === 1) {
     outs += 5;
     reasons.push("זוג – אאוטים לסט");
   }
