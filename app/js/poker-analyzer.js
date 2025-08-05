@@ -30,15 +30,39 @@ document.getElementById("analyze-btn").addEventListener("click", function () {
 });
 
 function estimateOuts(hand, board) {
-  // דוגמה בסיסית: אם יש פלאש דרואו (שני קלפים בצבע זהה ביד + שניים לפחות על השולחן)
   const allCards = hand.concat(board);
   const suits = { s: 0, h: 0, d: 0, c: 0 };
+  const ranks = [];
 
   allCards.forEach(card => {
     const suit = card[1];
+    const rank = card[0].toUpperCase();
     suits[suit] += 1;
+    ranks.push(rankToValue(rank));
   });
 
+  // חישוב פלאש דרואו
   const maxSuitCount = Math.max(...Object.values(suits));
-  return maxSuitCount >= 4 ? 9 : 6; // 9 לאאוטים של פלאש, 6 אם רק כמעט
+  let outs = 0;
+  if (maxSuitCount === 4) outs += 9; // פלאש דרואו
+  else if (maxSuitCount === 3) outs += 2; // חצי פלאש
+
+  // חישוב סטרייט דרואו
+  const sorted = [...new Set(ranks)].sort((a, b) => a - b);
+  for (let i = 0; i < sorted.length - 3; i++) {
+    const window = sorted.slice(i, i + 4);
+    const gaps = window[3] - window[0];
+    if (gaps === 3) outs += 8; // סטרייט פתוח
+    else if (gaps <= 4) outs += 4; // גאטשוט
+  }
+
+  return outs || 6; // ברירת מחדל
+}
+
+function rankToValue(rank) {
+  const rankMap = {
+    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
+    '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+  };
+  return rankMap[rank] || 0;
 }
