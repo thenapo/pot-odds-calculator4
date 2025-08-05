@@ -15,11 +15,9 @@ document.getElementById("analyze-btn").addEventListener("click", function () {
   const totalPot = potSize + callSize;
   const potOdds = callSize / totalPot;
 
-  // קבלת מספר אאוטים + סיבה
   const { outs, reason } = estimateOuts(handCards, communityCards);
   const equity = (outs * 2) / 100;
 
-  // עדכון תוצאות
   document.getElementById("current-hand-result").innerText = handCards.join(", ");
   document.getElementById("outs-result").innerText = `${outs} אאוטים (${reason})`;
   document.getElementById("pot-odds-result").innerText = (potOdds * 100).toFixed(2) + "%";
@@ -34,6 +32,7 @@ document.getElementById("analyze-btn").addEventListener("click", function () {
 function estimateOuts(hand, board) {
   const allCards = hand.concat(board);
   const suits = { s: 0, h: 0, d: 0, c: 0 };
+  const rankCounts = {};
   const ranks = [];
 
   allCards.forEach(card => {
@@ -41,6 +40,7 @@ function estimateOuts(hand, board) {
     const rank = card[0].toUpperCase();
     suits[suit] += 1;
     ranks.push(rankToValue(rank));
+    rankCounts[rank] = (rankCounts[rank] || 0) + 1;
   });
 
   const reasons = [];
@@ -70,21 +70,6 @@ function estimateOuts(hand, board) {
     }
   }
 
-  if (outs === 0) {
-    outs = 6;
-    reasons.push("הערכה כללית");
-  }
-
-  return {
-    outs,
-    reason: reasons.join(", ")
-  };
-}
-
-function rankToValue(rank) {
-  const rankMap = {
-    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
-    '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
-  };
-  return rankMap[rank] || 0;
-}
+  // זוגות / שלישיות
+  const pairs = Object.values(rankCounts).filter(c => c === 2).length;
+  const trips = Ob
