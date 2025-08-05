@@ -1,4 +1,3 @@
-
 document.getElementById("analyze-btn").addEventListener("click", function () {
   const handInput = document.getElementById("hand").value;
   const communityInput = document.getElementById("community").value;
@@ -15,11 +14,14 @@ document.getElementById("analyze-btn").addEventListener("click", function () {
 
   const totalPot = potSize + callSize;
   const potOdds = callSize / totalPot;
-  const outs = estimateOuts(handCards, communityCards);
+
+  // קבלת מספר אאוטים + סיבה
+  const { outs, reason } = estimateOuts(handCards, communityCards);
   const equity = (outs * 2) / 100;
 
+  // עדכון תוצאות
   document.getElementById("current-hand-result").innerText = handCards.join(", ");
-  document.getElementById("outs-result").innerText = outs + " אאוטים";
+  document.getElementById("outs-result").innerText = `${outs} אאוטים (${reason})`;
   document.getElementById("pot-odds-result").innerText = (potOdds * 100).toFixed(2) + "%";
   document.getElementById("equity-result").innerText = (equity * 100).toFixed(2) + "%";
 
