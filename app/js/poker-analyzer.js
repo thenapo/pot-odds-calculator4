@@ -72,4 +72,34 @@ function estimateOuts(hand, board) {
 
   // זוגות / שלישיות
   const pairs = Object.values(rankCounts).filter(c => c === 2).length;
-  const trips = Ob
+  const trips = Object.values(rankCounts).filter(c => c === 3).length;
+
+  if (trips >= 1) {
+    outs += 7;
+    reasons.push("סט – אאוטים לפול האוס / קארה");
+  } else if (pairs >= 2) {
+    outs += 4;
+    reasons.push("שני זוגות – אאוטים לפול האוס");
+  } else if (pairs === 1) {
+    outs += 5;
+    reasons.push("זוג – אאוטים לסט");
+  }
+
+  if (outs === 0) {
+    outs = 6;
+    reasons.push("הערכה כללית");
+  }
+
+  return {
+    outs,
+    reason: reasons.join(", ")
+  };
+}
+
+function rankToValue(rank) {
+  const rankMap = {
+    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
+    '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+  };
+  return rankMap[rank] || 0;
+}
