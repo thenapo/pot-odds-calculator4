@@ -41,22 +41,42 @@ function estimateOuts(hand, board) {
     ranks.push(rankToValue(rank));
   });
 
-  // חישוב פלאש דרואו
-  const maxSuitCount = Math.max(...Object.values(suits));
+  const reasons = [];
   let outs = 0;
-  if (maxSuitCount === 4) outs += 9; // פלאש דרואו
-  else if (maxSuitCount === 3) outs += 2; // חצי פלאש
 
-  // חישוב סטרייט דרואו
+  // פלאש דרואו
+  const maxSuitCount = Math.max(...Object.values(suits));
+  if (maxSuitCount === 4) {
+    outs += 9;
+    reasons.push("פלאש דרואו");
+  } else if (maxSuitCount === 3) {
+    outs += 2;
+    reasons.push("פלאש אפשרי חלקי");
+  }
+
+  // סטרייט דרואו
   const sorted = [...new Set(ranks)].sort((a, b) => a - b);
   for (let i = 0; i < sorted.length - 3; i++) {
     const window = sorted.slice(i, i + 4);
     const gaps = window[3] - window[0];
-    if (gaps === 3) outs += 8; // סטרייט פתוח
-    else if (gaps <= 4) outs += 4; // גאטשוט
+    if (gaps === 3) {
+      outs += 8;
+      reasons.push("סטרייט פתוח");
+    } else if (gaps <= 4) {
+      outs += 4;
+      reasons.push("גאטשוט");
+    }
   }
 
-  return outs || 6; // ברירת מחדל
+  if (outs === 0) {
+    outs = 6;
+    reasons.push("הערכה כללית");
+  }
+
+  return {
+    outs,
+    reason: reasons.join(", ")
+  };
 }
 
 function rankToValue(rank) {
